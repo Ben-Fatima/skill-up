@@ -1,0 +1,82 @@
+# Basics
+
+- Algorithms + Data structures @done
+- SQL @done
+- OOP @done
+- Request response cycle @done
+  - HTTP: method, headers, (theorie) @done
+  - CORS + fetch (Ajax) @done
+    - run a simple HTTP server on localhost:3000 @done
+    - run a separate server on localhost:4000 (html page inside the html page, make a request to localhost:3000) @done
+  - Session & cookies @done
+   - create mini app with login, dashboard, logout @done
+   - login (username) -> dashboard @done
+   - dashboard -> show the logged in username or redirect to /login @done
+
+- WebSockets (optional)
+  - create a simple open chat
+  - single page: list of messages + input 
+- later: 
+  - Reverse proxies (ex: Nginx)
+  - UDP, TCP, DNS, WebRTC
+
+# PHP
+
+## project 1: file importer
+import a large (500mb+) csv file into a database table
+a web page to upload the file and track progress
+use vanilla PHP (no frameworks)
+use composer and PSR-4 (autoloader)
+
+*Skills:*
+- PSR-4 autoloader
+- Filesystem
+- File upload
+- Tracking async progress
+- sqlite database
+- php -S 
+
+## Project 2: REST API (basic) + CLI frontend (basic)
+...
+*Skills:*
+- CLI scripts
+- Make REST API
+- Consume a REST API
+
+## Project 3:
+simple ecommerce store
+Laravel
+...
+*Skills:*
+- Auth
+- Access control
+- CRUD
+- Search, filters, sorting
+- Pagination
+
+# Skills
+*Backend skills:*
+- Webhooks
+- Cron
+- Ratelimit
+- Sending mails
+- Caching (redis)
+
+
+*Frontend skills:*
+- JS/TS
+- React
+  - Hooks
+  - Context
+  - Routing
+  - State management
+  - Query management (react-query)
+  - Form management (react-hook-form)
+
+*Devops skills:*
+- Docker
+- Reverse proxy: Apache, Nginx, Caddy
+- Load balancer
+
+*Other skills:*
+- Databases: MongoDB

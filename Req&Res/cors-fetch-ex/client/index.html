@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+  <body>
+    Welcome to the client!
+    <div id="output"></div>
+  </body>
+  <script type="module">
+    const out = document.getElementById("output");
+    try {
+      const res = await fetch("http://localhost:3000/", { method: "GET" });
+      const data = await res.json();
+      out.textContent = data.hello;
+    } catch (err) {
+      out.textContent = `Request failed: ${err.message}`;
+    }
+  </script>
+</html>

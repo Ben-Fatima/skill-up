@@ -13,9 +13,9 @@
    - login (username) -> dashboard @done
    - dashboard -> show the logged in username or redirect to /login @done
 
-- WebSockets (optional)
-  - create a simple open chat
-  - single page: list of messages + input 
+- WebSockets (optional) @done
+  - create a simple open chat @done
+  - single page: list of messages + input  @done
 - later: 
   - Reverse proxies (ex: Nginx)
   - UDP, TCP, DNS, WebRTC

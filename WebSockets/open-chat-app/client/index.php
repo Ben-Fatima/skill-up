@@ -112,7 +112,7 @@ switch ($method) {
             </div>
             <form id="chat-form">
               <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off">
-              <button type="submit">Send</button>
+              <button type="submit" onclick="submit">Send</button>
             </form>
 
             <script>

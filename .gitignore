@@ -1,0 +1,10 @@
+FileImporter/storage/*
+FileImporter/storage/file_importer.sqlite
+FileImporter/temp/*
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+FileImporter/vendor/*
+FileImporter/sample_file

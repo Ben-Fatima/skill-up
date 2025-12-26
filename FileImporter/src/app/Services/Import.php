@@ -14,6 +14,11 @@ use PDO;
 class Import {
 
   /**
+   * @var self|null
+   */
+  private static ?self $instance = null;
+
+  /**
    * Absolute base path for storage directory.
    *
    * @var string
@@ -51,12 +56,21 @@ class Import {
   /**
    * Set up dependencies and storage path.
    */
-  public function __construct() {
+  private function __construct() {
     $this->db       = Database::getConnection();
     $this->imports  = new ImportRepository();
     $this->products = new ProductRepository();
     $this->errors   = new ErrorRepository();
     $this->path     = dirname(__DIR__, 3) . '/storage';
+  }
+
+  public static function getInstance(): self
+  {
+    if (self::$instance === null) {
+      self::$instance = new self();
+    }
+
+    return self::$instance;
   }
 
   /**
@@ -193,9 +207,7 @@ class Import {
    */
   private function setImportStatus(int $importId, string $status): void
   {
-    $this->imports
-         ->where('id', '=', $importId)
-         ->update(['progress_status' => $status, 'updated_at' => date('c')]);
+    $this->imports->setStatus($importId, $status);
   }
 
   /**
@@ -308,22 +320,14 @@ class Import {
       return 'created';
   }
 
-  private function updateImportProgress(
-    int $importId,
-    int $bytesProcessed,
-    int $processedRows,
-    bool $finished
-  ): void {
-    $status = $finished ? 'finished' : 'processing';
-    $this->imports
-         ->where('id', '=', $importId)
-         ->update([
-           'bytes_processed' => $bytesProcessed,
-           'processed_rows'  => $processedRows,
-           'progress_status'=> $status,
-           'updated_at'     => date('c'),
-        ]);
-  }
+private function updateImportProgress(
+  int $importId,
+  int $bytesProcessed,
+  int $processedRows,
+  bool $finished
+): void {
+  $this->imports->updateProgress($importId, $bytesProcessed, $processedRows, $finished);
+}
   
   /**
    * Retrieve current status for an import.
@@ -398,10 +402,7 @@ class Import {
     if (!$import) {
       return null;
     }
-    $errors = $this->errors
-                   ->where('import_id', '=', $importId)
-                   ->get();
-
+    $errors = $this->errors->listByImportId($importId);
     return $this->buildErrorsCsv($errors);
   }
 

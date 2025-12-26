@@ -4,13 +4,12 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use App\Controllers\UploadController;
 use App\Controllers\ImportController;
-use App\Controllers\AuthController;
 use App\Controllers\ProductController;
 use Core\Router;
 
 $router = new Router();
 
-$router->get('/',[AuthController::class, 'index']);
+$router->redirect('/', '/upload');
 
 $router->get('/upload',          [UploadController::class, 'form']);
 $router->post('/upload/init',    [UploadController::class, 'init']);

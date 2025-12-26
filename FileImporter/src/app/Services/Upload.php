@@ -11,6 +11,11 @@ class Upload
 {
 
   /**
+   * @var self|null
+   */
+  private static ?self $instance = null;
+
+  /**
    * @var string Storage directory for uploaded files.
    */
   private string $storageDir;
@@ -25,11 +30,20 @@ class Upload
    */
   private ImportRepository $imports;
    
-  public function __construct()
+  private function __construct()
   {
     $this->storageDir = dirname(__DIR__, 3) . '/storage/uploads';
     $this->tmpDir = dirname(__DIR__, 3) . '/storage/tmp';
     $this->imports = new ImportRepository();
+  }
+
+  public static function getInstance(): self
+  {
+    if (self::$instance === null) {
+      self::$instance = new self();
+    }
+
+    return self::$instance;
   }
 
   /**
@@ -53,7 +67,7 @@ class Upload
     
     $uploadId = uniqid('upload_', true);
 
-    $this->checkDirExists($this->tmpDir);
+    $this->ensureDirExists($this->tmpDir);
     $tmpPath = $this->getTmpFilePath($uploadId);
     file_put_contents($tmpPath, '');
 
@@ -106,7 +120,7 @@ class Upload
     }
 
     $storageDir = $this->storageDir;
-    $this->checkDirExists($storageDir);
+    $this->ensureDirExists($storageDir);
     $uniqueName = uniqid('import_', true) . '.csv';
     $finalPath = $storageDir . '/' . $uniqueName;
 
@@ -127,7 +141,7 @@ class Upload
    * @param string $path Directory path to verify.
    * @return void
    */
-  private function checkDirExists(string $path): void {
+  private function ensureDirExists(string $path): void {
     if(!is_dir($path)) {
       mkdir($path, 0777, true);
     }

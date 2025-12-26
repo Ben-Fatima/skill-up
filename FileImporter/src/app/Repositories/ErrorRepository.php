@@ -7,9 +7,10 @@ use Core\Query;
 /**
  * Repository for persisting import row errors to the database.
  */
-class ErrorRepository extends Query
+class ErrorRepository
 {
 
+  private Query $errors;
   /**
    * Prepared statement used to insert error rows.
    *
@@ -23,8 +24,8 @@ class ErrorRepository extends Query
    */
   public function __construct()
   {
-    parent::__construct('errors');
-    $pdo = $this->pdo();
+    $this->errors = Query::table('errors');
+    $pdo = $this->errors->pdo();
 
     $this->insertError = $pdo->prepare(
       'INSERT INTO errors (
@@ -64,4 +65,11 @@ class ErrorRepository extends Query
         ':created_at' => $now,
       ]);
     }
+
+  public function listByImportId(int $importId): array
+  {
+    return Query::table('errors')
+      ->where('import_id', '=', $importId)
+      ->get();
+  }
 }

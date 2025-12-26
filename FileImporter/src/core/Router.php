@@ -72,4 +72,31 @@ class Router {
       throw new \RuntimeException('Invalid route handler');
     }
   }
+
+  /**
+   * Redirect to a path with an optional status code.
+   *
+   * @param string $from Source path to match.
+   * @param string $to Destination path to redirect to.
+   * @param int $statusCode HTTP status code for redirect.
+   */
+  public function redirect(string $from, string $to, int $statusCode = 302): void
+  {
+    $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+
+    if ($from === '') $from = '/';
+    if ($from[0] !== '/') $from = '/' . $from;
+    if ($to !== '' && $to[0] !== '/') $to = '/' . $to;
+
+    if ($from === $to) {
+      return;
+    }
+  
+    if ($currentPath !== $from) {
+      return;
+    }
+  
+    header('Location: ' . $to, true, $statusCode);
+    exit;
+  }
 }

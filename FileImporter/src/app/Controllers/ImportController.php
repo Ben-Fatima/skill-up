@@ -22,7 +22,7 @@ class ImportController
    * Set up the controller with a fresh import service instance.
    */
   public function __construct() {
-    $this->import = new Import();
+    $this->import = Import::getInstance();
   }
 
   /**

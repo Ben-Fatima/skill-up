@@ -3,11 +3,12 @@
 namespace App\Controllers;
 
 use App\Repositories\ProductRepository;
+use Core\Controller;
 
 /**
  * Handles product listing pages.
  */
-class ProductController
+class ProductController extends Controller
 {
 
   /**
@@ -30,19 +31,21 @@ class ProductController
    *
    * @return void
    */
-  public function index(): void {
+  public function index(): void 
+  {
     $perPage = 50;
-    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-    $page = max(1, $page);
-
+    $page = max(1, (int)($_GET['page'] ?? 1));
     $offset = ($page - 1) * $perPage;
-
-    $products = $this->products->all($perPage, $offset);
-
+    $data = $this->products->paginate($perPage, $offset);
     $hasPrev = $page > 1;
-    $hasNext = count($products) === $perPage; 
+    $hasNext = count($data) === $perPage;
 
-    // variables used in the template the template:
-    require __DIR__ . '/../views/products/index.php';
+    $this->render('products/index', [
+      'products' => $data,
+      'page'     => $page,
+      'perPage'  => $perPage,
+      'hasPrev'  => $hasPrev,
+      'hasNext'  => $hasNext,
+    ]);
   }
 }

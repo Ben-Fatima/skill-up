@@ -8,8 +8,11 @@ use PDO;
 /**
  * Repository for reading and writing product records.
  */
-class ProductRepository extends Query
+class ProductRepository 
 {
+
+  private Query $products;
+
 
   /** 
    * @var \PDOStatement Statement to select product ids by SKU 
@@ -31,8 +34,8 @@ class ProductRepository extends Query
    */
   public function __construct()
   {
-    parent::__construct('products');
-    $pdo = $this->pdo();
+    $this->products = Query::table('products');
+    $pdo = $this->products->pdo();
 
     $this->selectBySku = $pdo->prepare(
       'SELECT id, sku FROM products WHERE sku = :sku'
@@ -121,5 +124,17 @@ class ProductRepository extends Query
         ':stock'      => $stock,
         ':updated_at' => $now,
       ]);
+  }
+
+  /**
+   * Retrieve a paginated list of products.
+   *
+   * @param int $limit  Number of records to retrieve.
+   * @param int $offset Offset to start retrieving records from.
+   * @return array List of associative product rows.
+   */
+  public function paginate(int $limit, int $offset): array
+  {
+    return $this->products->get($limit, $offset, 'id', 'ASC');
   }
 }

@@ -6,15 +6,16 @@ use Core\Query;
 /**
  * Repository for interacting with the `imports` table.
  */
-class ImportRepository extends Query
+class ImportRepository
 {
 
+  private Query $imports;
   /**
    * Initialise repository with the imports table.
    */
   public function __construct()
   {
-    parent::__construct('imports');
+    $this->imports = Query::table('imports');
   }
 
   /**
@@ -25,7 +26,7 @@ class ImportRepository extends Query
    */
   public function findById(int $id): ?array
   {
-    return $this->where('id', '=', $id)->first();
+    return $this->imports->where('id', '=', $id)->first();
   }
 
   /**
@@ -37,7 +38,7 @@ class ImportRepository extends Query
    */
   public function setStatus(int $id, string $status): void
   {
-    $this->where('id', '=', $id)->update([
+    $this->imports->where('id', '=', $id)->update([
       'progress_status' => $status,
       'updated_at'      => date('c'),
     ]);
@@ -60,7 +61,7 @@ class ImportRepository extends Query
   ): void {
     $status = $finished ? 'finished' : 'processing';
 
-    $this->where('id', '=', $id)->update([
+    $this->imports->where('id', '=', $id)->update([
       'bytes_processed' => $bytesProcessed,
       'processed_rows'  => $processedRows,
       'progress_status' => $status,
@@ -82,7 +83,7 @@ class ImportRepository extends Query
     int $fileSizeBytes
   ): int {
     $now = date('c');
-    return $this->insert([
+    return $this->imports->insert([
       'file_name'       => $fileName,
       'file_path'       => $filePath,
       'progress_status' => 'pending',

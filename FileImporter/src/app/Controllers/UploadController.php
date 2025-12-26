@@ -3,11 +3,12 @@
 namespace App\Controllers;
 
 use App\Services\Upload;
+use Core\Controller;
 
 /**
  * Handles chunked upload HTTP endpoints.
  */
-class UploadController
+class UploadController extends Controller
 {
 
   /**
@@ -21,7 +22,7 @@ class UploadController
    * Instantiate the upload controller with a service instance.
    */
   public function __construct() {
-    $this->upload = new Upload();
+    $this->upload = Upload::getInstance();
   }
    
   /**
@@ -31,7 +32,7 @@ class UploadController
    */
   public function form(): void
   {
-    require __DIR__ . '/../views/upload/form.html';
+    $this->renderHtml('upload/form');
   }
 
   /**

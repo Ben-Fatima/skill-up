@@ -79,9 +79,26 @@ class Query {
    * @return int
    * @throws \RuntimeException
    */
-  public function update(array $data) : int {
+  public function update(array $data) : int 
+  {
     if (empty($this->wheres)) {
       throw new \RuntimeException('Refusing to UPDATE without WHERE clause.');
+    }
+
+    if (empty($data)) {
+      throw new \InvalidArgumentException('Update data cannot be empty.');
+    }
+
+    foreach ($data as $key => $value) {
+      // keys must be string column names
+      if (!is_string($key) || !preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $key)) {
+        throw new \InvalidArgumentException("Invalid column name in update: {$key}");
+      }
+
+      // keep it simple: only bind scalars or null
+      if (!(is_scalar($value) || $value === null)) {
+        throw new \InvalidArgumentException("Invalid value type for '{$key}'. Only scalar/null allowed.");
+      }
     }
 
     $setClauses = array_map(fn($key) => $key . ' = :' . $key, array_keys($data));
@@ -113,7 +130,19 @@ class Query {
    * @param mixed $value
    * @return self
    */
-  public function where(string $column, string $operator, $value ) : self {
+  public function where(string $column, string $operator, $value ) : self 
+  {
+    $operator = strtoupper(trim($operator));
+    $allowed = [
+      '=', '!=', '<>',
+      '>', '>=', '<', '<=',
+      'LIKE', 'NOT LIKE',
+    ];
+
+    if (!in_array($operator, $allowed, true)) {
+      throw new \InvalidArgumentException("Invalid operator: {$operator}");
+    }
+
     $this->wheres[] = [
       'column' => $column, 
       'value' => $value, 
@@ -143,21 +172,48 @@ class Query {
   }
 
   /**
-   * Fetch all matching rows.
+   * Fetch matching rows.
    *
+   * @param int|null $limit  null = no limit
+   * @param int $offset
+   * @param string $orderBy
+   * @param string $direction
    * @return array
    */
-  public function get() : array {
+  public function get(
+      ?int $limit = null,
+      int $offset = 0,
+      string $orderBy = 'id',
+      string $direction = 'ASC'
+  ): array {
+    $offset = max(0, $offset);
+
+    // very basic hardening for ORDER BY (since it can't be binded in identifiers)
+    $direction = strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC';
+    if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $orderBy)) {
+      throw new \InvalidArgumentException('Invalid orderBy column');
+    }
+
     $sql = 'SELECT * FROM ' . $this->table . ' ' . $this->buildWhereClause();
+    $sql .= ' ORDER BY ' . $orderBy . ' ' . $direction;
+
+    if ($limit !== null) {
+      $limit = max(1, $limit);
+      $sql .= ' LIMIT ' . $limit . ' OFFSET ' . $offset;
+    }
+
     $stmt = $this->db->prepare($sql);
+
     foreach ($this->wheres as $where) {
       $stmt->bindValue(':' . $where['column'], $where['value']);
     }
+
     $stmt->execute();
     $this->wheres = [];
 
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
+
 
   /**
    * Build the WHERE clause for the current query.
@@ -181,30 +237,8 @@ class Query {
    *
    * @return PDO
    */
-  protected function pdo(): PDO
+  public function pdo(): PDO
   {
     return $this->db;
-  }
-
-  /**
-   * Fetch a paginated list of rows ordered by id.
-   *
-   * @param int $limit
-   * @param int $offset
-   * @return array
-   */
-  public function all(int $limit = 50, int $offset = 0): array
-  {
-    $limit  = max(1, $limit);
-    $offset = max(0, $offset);
-
-    $sql = 'SELECT * FROM ' . $this->table .
-           ' ORDER BY id ' .
-           ' LIMIT ' . $limit .
-           ' OFFSET ' . $offset;
-
-    $stmt = $this->db->prepare($sql);
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 }

@@ -8,6 +8,7 @@ use Illuminate\Validation\ValidationException;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class Handler extends ExceptionHandler
 {
@@ -47,8 +48,39 @@ class Handler extends ExceptionHandler
      *
      * @throws \Throwable
      */
-    public function render($request, Throwable $exception)
+    public function render($request, Throwable $e)
     {
-        return parent::render($request, $exception);
+        if ($e instanceof ValidationException) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors'  => $e->errors(),
+            ], 422);
+        }
+
+        if ($e instanceof ModelNotFoundException) {
+            return response()->json([
+                'message' => 'Resource not found',
+            ], 404);
+        }
+
+        if ($e instanceof HttpExceptionInterface) {
+            $status = $e->getStatusCode();
+
+            $message = match ($status) {
+                404 => 'Route not found',
+                405 => 'Method not allowed',
+                default => 'HTTP error',
+            };
+
+            return response()->json([
+                'message' => $message,
+            ], $status);
+        }
+
+        $debug = (bool) env('APP_DEBUG', false);
+
+        return response()->json([
+            'message' => $debug ? $e->getMessage() : 'Server error',
+        ], 500);
     }
 }

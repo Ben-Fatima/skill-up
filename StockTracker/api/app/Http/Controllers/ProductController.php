@@ -29,7 +29,7 @@ class ProductController extends Controller
 
 
     /**
-     * Creates and stores new product.
+     * Creates new product.
      * @return \Illuminate\Http\JsonResponse
      */
     public function store()
@@ -74,7 +74,6 @@ class ProductController extends Controller
                 'message' => 'No data provided for update'
             ], 400);
         }
-
 
         $product = Product::findOrFail($id);
         $validated = $this->validateProduct($data, $id, true);

@@ -44,7 +44,7 @@ exposed through a REST API, and operated via a CLI client.
 
 ### Model
 - Product: sku, name, unit_cost_cents, min_stock
-- Location: code, name
+- Location: code, address
 - StockMovement: product_id, location_id, type(IN|OUT|ADJUST), qty, note, created_at
 - Stock on hand is derived from movements (or cached safely later)
 

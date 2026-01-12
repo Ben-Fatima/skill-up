@@ -31,3 +31,5 @@ $router->delete('/locations/{id:[1-9][0-9]*}', 'LocationController@destroy');
 
 $router->get('/movements', 'MovementController@index');
 $router->post('/movements', 'MovementController@store');
+
+$router->get('/stock', 'StockController@index');

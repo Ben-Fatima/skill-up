@@ -25,7 +25,7 @@ class MovementController extends Controller
         $productId = request('product_id') ?? null;
         $locationId = request('location_id') ?? null;
         $type = request('type') ?? null;
-        $perPage = StockMovement::parsePerPage(request('per_page') ?? null);
+        $perPage = StockMovement::parsePerPage(request('per_page'));
 
         $movements = $this->getMovementHistoryPaginator($productId, $locationId, $type, $perPage);
 

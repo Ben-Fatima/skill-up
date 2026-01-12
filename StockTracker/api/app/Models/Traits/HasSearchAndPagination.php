@@ -59,8 +59,10 @@ trait HasSearchAndPagination
             $perPage = $value;
         }
 
-        if ($perPage <= 0 || $perPage > static::PER_PAGE_MAX) {
+        if ($perPage <= 0) {
             return static::PER_PAGE_DEFAULT;
+        } elseif ($perPage > static::PER_PAGE_MAX) {
+            return static::PER_PAGE_MAX;
         }
 
         return $perPage;

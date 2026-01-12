@@ -29,4 +29,5 @@ $router->get('/locations/{id:[1-9][0-9]*}', 'LocationController@show');
 $router->patch('/locations/{id:[1-9][0-9]*}', 'LocationController@update');
 $router->delete('/locations/{id:[1-9][0-9]*}', 'LocationController@destroy');
 
+$router->get('/movements', 'MovementController@index');
 $router->post('/movements', 'MovementController@store');

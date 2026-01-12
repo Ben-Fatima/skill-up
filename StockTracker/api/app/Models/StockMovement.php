@@ -4,12 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Traits\HasSearchAndPagination;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 
 class StockMovement extends Model
 {
     use HasFactory;
+    use HasSearchAndPagination;
 
     /**
      * The attributes that are mass assignable.
@@ -33,6 +35,14 @@ class StockMovement extends Model
         'OUT',
         'ADJUST'
     ];
+
+    public const PER_PAGE_DEFAULT = 20;
+
+    /**
+     * Maximum pagination size.
+     */
+    public const PER_PAGE_MAX = 100;
+
     /**
      * Get the product in the movement.
      */
@@ -55,5 +65,4 @@ class StockMovement extends Model
             ->where('location_id', $locationId)
             ->sum('qty');
     }
-
 }

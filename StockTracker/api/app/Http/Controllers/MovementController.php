@@ -9,16 +9,31 @@ use Illuminate\Support\Facades\DB;
 
 class MovementController extends Controller
 {
+    protected const FIELDS = [
+        'location_id',
+        'product_id',
+        'note',
+        'type',
+        'qty',
+    ];
+
     /**
-     * Allowed fields for movement operations.
+     * Lists the movements history
      */
-    private const FIELDS = [
-                            'product_id',
-                            'location_id',
-                            'type',
-                            'qty',
-                            'note'
-                        ];
+    public function index()
+    {
+        $productId = request('product_id') ?? null;
+        $locationId = request('location_id') ?? null;
+        $type = request('type') ?? null;
+        $perPage = StockMovement::parsePerPage(request('per_page') ?? null);
+
+        $movements = $this->getMovementHistoryPaginator($productId, $locationId, $type, $perPage);
+
+        return response()->json([
+            'message' => 'Movement history',
+            'data' => $movements
+        ], 200);
+    }
 
     /**
      * Creates new location
@@ -72,7 +87,7 @@ class MovementController extends Controller
     }
 
     /**
-     *
+     * Checks if there is enough stock to take out
      */
     private function hasSufficientStockForOut(int $productId, int $locationId, int $qty): array
     {
@@ -96,5 +111,30 @@ class MovementController extends Controller
         }
 
         return $qty;
+    }
+
+    private function getMovementHistoryPaginator($productId, $locationId, $type, $perPage)
+    {
+        $query = StockMovement::query();
+
+        $query->when($productId, fn($q, $id) => $q->where('product_id', $id));
+        $query->when($locationId, fn($q, $id) => $q->where('location_id', $id));
+        $query->when($type, function($q, $id) {
+            if(in_array($id, StockMovement::TYPES, true)){
+               $q->where('type', $id);
+            }
+        });
+
+        $query->orderBy('created_at','desc');
+        $paginator = $query->paginate($perPage);
+
+        foreach($paginator->items() as $i)
+        {
+            if($i['type'] === 'IN' || $i['type'] === 'OUT'){
+                 $i['qty'] = abs($i['qty']);
+            }
+        }
+
+        return $paginator;
     }
 }

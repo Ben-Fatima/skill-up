@@ -43,6 +43,8 @@ class StockMovement extends Model
      */
     public const PER_PAGE_MAX = 100;
 
+    public const MIN_ALLOWED_QTY = 100;
+
     /**
      * Get the product in the movement.
      */

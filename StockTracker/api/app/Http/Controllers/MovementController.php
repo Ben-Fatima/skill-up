@@ -6,7 +6,6 @@ use App\Models\StockMovement;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 
-
 class MovementController extends Controller
 {
     protected const FIELDS = [
@@ -19,6 +18,8 @@ class MovementController extends Controller
 
     /**
      * Lists the movements history
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
@@ -37,6 +38,7 @@ class MovementController extends Controller
 
     /**
      * Creates new location
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function store()
@@ -72,6 +74,7 @@ class MovementController extends Controller
 
     /**
      * Validates location data.
+     *
      * @param array $data
      * @return array
      */
@@ -88,6 +91,11 @@ class MovementController extends Controller
 
     /**
      * Checks if there is enough stock to take out
+     *
+     * @param int $productId
+     * @param int $locationId
+     * @param int $qty
+     * @return array{ok: bool, stock: int}
      */
     private function hasSufficientStockForOut(int $productId, int $locationId, int $qty): array
     {
@@ -97,7 +105,11 @@ class MovementController extends Controller
     }
 
     /**
+     * Normalizes quantity sign based on movement type.
      *
+     * @param string $type
+     * @param int $qty
+     * @return int
      */
     private function normalizeQtyByType(string $type, int $qty) : int
     {
@@ -113,6 +125,15 @@ class MovementController extends Controller
         return $qty;
     }
 
+    /**
+     * Builds a filtered movement history paginator.
+     *
+     * @param int|null $productId
+     * @param int|null $locationId
+     * @param string|null $type
+     * @param int $perPage
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
     private function getMovementHistoryPaginator($productId, $locationId, $type, $perPage)
     {
         $query = StockMovement::query();

@@ -33,3 +33,6 @@ $router->get('/movements', 'MovementController@index');
 $router->post('/movements', 'MovementController@store');
 
 $router->get('/stock', 'StockController@index');
+$router->get('/products/{id:[1-9][0-9]*}/stock','StockController@getProductStock');
+$router->get('/locations/{id:[1-9][0-9]*}/stock','StockController@getLocationStock');
+$router->get('/reports/low-stock','StockController@getLowStockReport');

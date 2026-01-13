@@ -23,21 +23,31 @@
 # PHP
 
 ## project 1: file importer
-import a large (500mb+) csv file into a database table
-a web page to upload the file and track progress
-use vanilla PHP (no frameworks)
-use composer and PSR-4 (autoloader)
+- import a large (500mb+) csv file into a database table @done
+- a web page to upload the file and track progress @done
+- use vanilla PHP (no frameworks) @done
+- use composer and PSR-4 (autoloader) @done
 
 *Skills:*
-- PSR-4 autoloader
-- Filesystem
-- File upload
-- Tracking async progress
-- sqlite database
-- php -S 
+- PSR-4 autoloader @done
+- Filesystem @done
+- File upload @done
+- Tracking async progress @done
+- sqlite database @done
+- php -S @done
 
-## Project 2: REST API (basic) + CLI frontend (basic)
-...
+## Project 2: Inventory REST API (Lumen) + CLI (PHP) — multi-location
+
+### Goal
+Build an inventory system with multiple locations where stock is tracked via movements,
+exposed through a REST API, and operated via a CLI client.
+
+### Model
+- Product: sku, name, unit_cost_cents, min_stock
+- Location: code, address
+- StockMovement: product_id, location_id, type(IN|OUT|ADJUST), qty, note, created_at
+- Stock on hand is derived from movements (or cached safely later)
+
 *Skills:*
 - CLI scripts
 - Make REST API

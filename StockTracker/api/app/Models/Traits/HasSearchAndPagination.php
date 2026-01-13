@@ -5,8 +5,23 @@ namespace App\Models\Traits;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 
+/**
+ * Trait providing reusable search, sort, and pagination helpers for Eloquent models.
+ *
+ * Expected model constants:
+ * SearchableField string
+ * array<int, SearchableField> static::SEARCHABLE
+ * array<int, string> static::ALLOWED_SORTS
+ * int static::PER_PAGE_DEFAULT
+ * int static::PER_PAGE_MAX
+ */
 trait HasSearchAndPagination
 {
+    /**
+     * Build a query with search and sort applied.
+     *
+     * @param array<string, mixed> $params
+     */
     public static function buildSearchQuery(array $params): Builder
     {
         $query  = static::query();
@@ -20,6 +35,11 @@ trait HasSearchAndPagination
         return $query;
     }
 
+    /**
+     * Build a query with search/sort and return a paginated result set.
+     *
+     * @param array<string, mixed> $params
+     */
     public static function searchAndPaginate(array $params): LengthAwarePaginator
     {
         $query   = static::buildSearchQuery($params);
@@ -28,6 +48,9 @@ trait HasSearchAndPagination
         return $query->paginate($perPage);
     }
 
+    /**
+     * Normalize a value into a trimmed string or null.
+     */
     protected static function normalizeString(mixed $value): ?string
     {
         if (!is_string($value)) {
@@ -39,6 +62,9 @@ trait HasSearchAndPagination
         return $value === '' ? null : $value;
     }
 
+    /**
+     * Normalize direction to 'asc' or 'desc'.
+     */
     protected static function normalizeDir(mixed $dir): string
     {
         $dir = static::normalizeString($dir);
@@ -46,6 +72,9 @@ trait HasSearchAndPagination
         return ($dir !== null && strtolower($dir) === 'desc') ? 'desc' : 'asc';
     }
 
+    /**
+     * Parse per-page value, clamped to configured limits.
+     */
     protected static function parsePerPage(mixed $value): int
     {
         $perPage = static::PER_PAGE_DEFAULT;
@@ -68,6 +97,9 @@ trait HasSearchAndPagination
         return $perPage;
     }
 
+    /**
+     * Apply search filters to the query.
+     */
     protected static function applySearch(Builder $query, ?string $search): void
     {
         if ($search === null) {
@@ -89,6 +121,9 @@ trait HasSearchAndPagination
         });
     }
 
+    /**
+     * Apply sorting to the query.
+     */
     protected static function applySort(Builder $query, ?string $sort, string $dir): void
     {
         if ($sort === null) {

@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\HasSearchAndPagination;
 
-
+/**
+ * Represents a product with stock-tracking attributes.
+ */
 class Product extends Model
 {
     use HasFactory;
@@ -29,20 +31,15 @@ class Product extends Model
         'min_stock' => 'int',
     ];
 
-    /**
-     * Default pagination size.
-     */
+    /** @var int Default pagination size. */
     private const PER_PAGE_DEFAULT = 50;
 
-    /**
-     * Maximum pagination size.
-     */
+    /** @var int Maximum pagination size. */
     private const PER_PAGE_MAX = 100;
 
-    /**
-     * Allowed sorting fields.
-     */
+    /** @var string[] Allowed sorting fields. */
     private const ALLOWED_SORTS = ['sku', 'name', 'unit_cost_cents', 'min_stock'];
 
+    /** @var string[] Searchable fields. */
     private const SEARCHABLE = ['sku','name'];
 }

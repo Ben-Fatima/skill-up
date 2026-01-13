@@ -82,7 +82,7 @@ class StockController extends Controller
         $perPage = StockMovement::parsePerPage(request('per_page'));
 
         $stock = $this->stockOnHandQuery($query, true)
-                    ->havingRaw('SUM(stock_movements.qty) < ?', [StockMovement::MIN_ALLOWED_QTY]);
+                    ->havingRaw('SUM(stock_movements.qty) < products.min_stock');
 
         return response()->json([
             'message' => 'Low stock report',
